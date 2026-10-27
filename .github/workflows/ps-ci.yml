@@ -1,0 +1,29 @@
+name: PowerShell CI
+on:
+  push:
+    paths: ['powershell_project/**']
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  test-ps:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: powershell_project
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Modules
+        shell: pwsh
+        run: Install-Module -Name Pester, PSScriptAnalyzer -Force -SkipPublisherCheck -AllowClobber
+      - name: Lint
+        shell: pwsh
+        run: Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error
+      - name: Test
+        shell: pwsh
+        run: Invoke-Pester -Path ./main.Tests.ps1 -Output Detailed
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ps-script
+          path: powershell_project/main.ps1

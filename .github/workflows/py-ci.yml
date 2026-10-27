@@ -1,0 +1,30 @@
+name: Python CI
+on:
+  push:
+    paths: ['python_project/**']
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  test-py:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python_project
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Lint
+        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+      - name: Test with coverage
+        run: pytest --cov=main test_main.py --cov-report=xml
+      - name: Upload Artifact (Coverage)
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-coverage
+          path: python_project/coverage.xml
