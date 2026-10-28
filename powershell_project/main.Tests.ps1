@@ -14,5 +14,4 @@ Describe "Get-Factorial" {
     It "Ошибка для отрицательных" { 
         { Get-Factorial -Number -1 } | Should Throw 
     }
-}git config --global user.name Katliz
-git config --global user.email lisazlz29062009@gmail.com
+}
